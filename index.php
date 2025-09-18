@@ -1,6 +1,4 @@
 <?php
-header("Content-Type: application/json; charset=UTF-8");
-
 $method = $_SERVER['REQUEST_METHOD'];
 
 /* On découpe l’URL */
@@ -10,15 +8,23 @@ $uri = explode('/', trim($uri, '/'));
 /* On prend le dernier segment utile */
 $endpoint = end($uri);
 
-/* Si le dernier est "index.php", on regarde avant */
-if ($endpoint === "index.php") {
-    $endpoint = prev($uri);
+/* Si on appelle directement / ou index.php → on redirige vers le dashboard */
+if ($endpoint === "index.php" || $endpoint === "bac-jaune" || $endpoint === "") {
+    header("Location: views/dashboard.php");
+    exit;
 }
 
-/* Routage basique */
+/* On force le JSON uniquement pour l’API */
+header("Content-Type: application/json; charset=UTF-8");
+
+/* Routage unique */
 switch ($endpoint) {
     case "taches":
         require __DIR__ . "/src/controllers/tachesController.php";
+        break;
+
+    case "auth":
+        require __DIR__ . "/src/controllers/authController.php";
         break;
 
     default:
